@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Premium Birthday Invitation</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+TC:wght@400;600&family=Pinyon+Script&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --gold-primary: #d4af37;
+        --gold-light: #fdf5e6;
+        --gold-shimmer: #fff5d0;
+        --bg-red-light: #8b0000;
+        --bg-red-dark: #3a0000;
+        --bg-card: #a30b0b;
+        --transition-flip: 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background: radial-gradient(
+          circle at center,
+          var(--bg-red-light) 0%,
+          var(--bg-red-dark) 100%
+        );
+        min-height: 100vh;
+        font-family: "Cinzel", serif;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #particle-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .scene {
+        position: relative;
+        z-index: 10;
+        perspective: 2000px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100vh;
+        padding: 20px;
+      }
+
+      .card {
+        position: relative;
+        width: 90vw;
+        max-width: 420px;
+        aspect-ratio: 2 / 3;
+
+        transform-style: preserve-3d;
+        cursor: pointer;
+
+        transition: transform 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+        border-radius: 4px;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.8),
+          0 0 30px rgba(212, 175, 55, 0.15);
+
+        opacity: 1;
+      }
+
+      .card.is-flipped {
+        transform: rotateY(180deg);
+      }
+
+      .face {
+        position: absolute;
+        inset: 0;
+
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+
+        border-radius: 4px;
+
+        background: radial-gradient(
+          circle at top,
+          var(--bg-card),
+          var(--bg-red-dark)
+        );
+
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      .face.front {
+        transform: rotateY(0deg);
+      }
+
+      .face.back {
+        transform: rotateY(180deg);
+      }
+
+      .shou-large {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        font-size: 5rem;
+        line-height: 1;
+        font-weight: 600;
+      }
+
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          #d4af37 0%,
+          #fff5d0 40%,
+          #d4af37 60%,
+          #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s linear infinite;
+      }
+
+      .gold-text {
+        background: linear-gradient(
+          90deg,
+          #d4af37 0%,
+          #fff5d0 40%,
+          #d4af37 60%,
+          #d4af37 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s linear infinite;
+        font-weight: 500;
+      }
+
+      .chinese-font {
+        font-family: "Noto Serif TC", serif;
+      }
+
+      .front-top {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 15px;
+        align-items: flex-start;
+        height: 35%;
+      }
+
+      .shou-large {
+        font-size: 5rem;
+        line-height: 1;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      .vertical-text-container {
+        display: flex !important;
+        flex-direction: column !important;
+        writing-mode: horizontal-tb !important; /* Memaksa alur teks horizontal dari atas ke bawah */
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        height: auto;
+        padding: 10px 20px 30px 20px;
+        gap: 10px;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        line-height: 1.4;
+      }
+
+      .col-main {
+        flex: 1;
+      }
+      .col-spacer {
+        margin-top: auto;
+      }
+      .names-col {
+        display: flex !important;
+        flex-direction: column !important; /* Menyusun nama-nama keluarga berjejer ke bawah */
+        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
+        margin-right: 0 !important;
+      }
+
+      .back-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .eng-subtitle {
+        font-size: 0.75rem;
+        letter-spacing: 3px;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+      }
+
+      .eng-name {
+        font-family: "Pinyon Script", cursive;
+        font-size: 3.5rem;
+        line-height: 1.2;
+        margin-bottom: 15px;
+        text-transform: capitalize;
+        transform: rotate(-2deg);
+      }
+
+      .eng-title {
+        font-size: 1.2rem;
+        letter-spacing: 4px;
+        margin-bottom: 40px;
+      }
+
+      .eng-details {
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        line-height: 1.8;
+        margin-bottom: 25px;
+      }
+
+      .svg-decor {
+        position: absolute;
+        width: 120px;
+        height: auto;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+
+      .svg-peach-tl {
+        top: -10px;
+        left: -10px;
+      }
+      .svg-peach-tr {
+        top: -10px;
+        right: -10px;
+        transform: scaleX(-1);
+      }
+      .svg-peach-bl {
+        bottom: -10px;
+        left: -10px;
+        transform: scaleY(-1);
+      }
+      .svg-peach-br {
+        bottom: -10px;
+        right: -10px;
+        transform: scale(-1, -1);
+      }
+
+      .svg-corner-tr {
+        top: 15px;
+        right: 15px;
+        width: 60px;
+      }
+      .svg-corner-bl {
+        bottom: 15px;
+        left: 15px;
+        width: 60px;
+        transform: scale(-1, -1);
+      }
+
+      .back-shou {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        font-size: 3.5rem;
+        opacity: 0.15;
+        z-index: 1;
+      }
+
+      /* Staggered Animations */
+      .fade-up {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      .card.entrance-done .front .fade-up {
+        animation: fadeUpAnim 0.8s ease forwards;
+      }
+
+      .card.is-flipped .back .fade-up {
+        animation: fadeUpAnim 0.8s ease forwards;
+      }
+
+      /* Delay classes */
+      .d-1 {
+        animation-delay: 0.2s !important;
+      }
+      .d-2 {
+        animation-delay: 0.4s !important;
+      }
+      .d-3 {
+        animation-delay: 0.6s !important;
+      }
+      .d-4 {
+        animation-delay: 0.8s !important;
+      }
+
+      .hint {
+        margin-top: 35px;
+        color: var(--gold-light);
+        font-size: 0.9rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+        animation:
+          hintEntrance 1s ease forwards 2.5s,
+          hintPulse 2.5s infinite alternate 3.5s;
+      }
+
+      @keyframes cardEntrance {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes shine {
+        0% {
+          background-position: 100% 100%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+      @keyframes fadeUpAnim {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes hintEntrance {
+        to {
+          opacity: 0.7;
+          transform: translateY(0);
+        }
+      }
+      @keyframes hintPulse {
+        from {
+          opacity: 0.4;
+          text-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+        }
+        to {
+          opacity: 0.9;
+          text-shadow: 0 0 15px rgba(212, 175, 55, 0.9);
+        }
+      }
+
+      @media (max-width: 400px) {
+        .shou-large {
+          font-size: 4rem;
+        }
+        .vertical-text-container {
+          font-size: 0.85rem;
+          padding: 0 20px 30px 20px;
+        }
+        .eng-name {
+          font-size: 2.8rem;
+        }
+        .eng-title {
+          font-size: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card {
+          transition: transform 0.4s ease;
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+        .hint,
+        .shimmer,
+        .fade-up {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Canvas for floating gold particles -->
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="scene">
+      <div
+        class="card"
+        id="invitation-card"
+        role="button"
+        aria-label="Tap to flip invitation card"
+        tabindex="0"
+      >
+        <div class="face front">
+          <!-- Reusable SVG Gradient Defs -->
+          <svg width="0" height="0" style="position: absolute">
+            <defs>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#D4AF37" />
+                <stop offset="50%" stop-color="#FFF5D0" />
+                <stop offset="100%" stop-color="#B8860B" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          <div class="front-top fade-up d-1">
+            <!-- Top Left Peach Branch SVG -->
+            <svg
+              class="svg-decor svg-peach-tl"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M-10,30 Q30,40 60,10"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M10,35 Q40,60 70,30"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+                stroke-linecap="round"
+              />
+              <circle
+                cx="35"
+                cy="55"
+                r="15"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+              />
+              <path
+                d="M35,40 Q40,50 35,55"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <circle
+                cx="65"
+                cy="45"
+                r="12"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+              />
+              <path
+                d="M65,33 Q70,40 65,45"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M10,20 Q20,10 30,20 Q20,30 10,20"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M45,15 Q60,5 70,20 Q55,30 45,15"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M5,45 Q15,55 25,45 Q15,35 5,45"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+            </svg>
+
+            <!-- Center Large Character (Tetap dipertahankan sebagai hiasan kebudayaan/simbol Panjang Umur) -->
+            <div class="shou-large chinese-font shimmer">壽</div>
+
+            <!-- Top Right Peach Branch SVG -->
+            <svg
+              class="svg-decor svg-peach-tr"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M-10,30 Q30,40 60,10"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M10,35 Q40,60 70,30"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+                stroke-linecap="round"
+              />
+              <circle
+                cx="35"
+                cy="55"
+                r="15"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+              />
+              <path
+                d="M35,40 Q40,50 35,55"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <circle
+                cx="65"
+                cy="45"
+                r="12"
+                stroke="url(#goldGrad)"
+                stroke-width="1.5"
+              />
+              <path
+                d="M65,33 Q70,40 65,45"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M10,20 Q20,10 30,20 Q20,30 10,20"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M45,15 Q60,5 70,20 Q55,30 45,15"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+              <path
+                d="M5,45 Q15,55 25,45 Q15,35 5,45"
+                stroke="url(#goldGrad)"
+                stroke-width="1"
+              />
+            </svg>
+          </div>
+
+          <!-- Teks Bahasa Indonesia -->
+          <div class="vertical-text-container gold-text fade-up d-2">
+            <div
+              class="shimmer"
+              style="font-size: 0.75rem; letter-spacing: 2px"
+            >
+              Dengan hormat mengundang Bapak/Ibu/Saudara/i untuk hadir dalam
+              acara perayaan ulang tahun
+            </div>
+
+            <div
+              class="shimmer"
+              style="font-size: 0.95rem; font-weight: bold; margin: 4px 0"
+            >
+              ACARA ULANG TAHUN KE-88
+            </div>
+
+            <div
+              class="shimmer"
+              style="font-size: 1.1rem; font-weight: 700; color: #fff5d0"
+            >
+              TJHIN LIAN DJIT
+            </div>
+
+            <div class="names-col">
+              <span
+                class="shimmer"
+                style="width: 100%; display: block; font-size: 0.7rem"
+                >TURUT MENGUNDANG:</span
+              >
+              <span class="shimmer">Lorem Ipsum,</span>
+              <span class="shimmer">Dolor Sit,</span>
+              <span class="shimmer">Amet Consectetur,</span>
+              <span class="shimmer">Adipiscing Elit,</span>
+            </div>
+
+            <div class="shimmer" style="margin-top: 6px; font-size: 0.8rem">
+              Tekan undangan untuk melihat detail acara.
+            </div>
+          </div>
+        </div>
+
+        <div class="face back">
+          <!-- Background Large Shou -->
+          <div class="back-shou chinese-font gold-text shou-large fade-up d-1">
+            壽
+          </div>
+
+          <!-- Corner Geometric SVGs -->
+          <svg
+            class="svg-decor svg-corner-tr fade-up d-1"
+            viewBox="0 0 50 50"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,2 L48,2 L48,50"
+              stroke="url(#goldGrad)"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12,12 L38,12 L38,38"
+              stroke="url(#goldGrad)"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M24,24 L24,24"
+              stroke="url(#goldGrad)"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+          </svg>
+          <svg
+            class="svg-decor svg-corner-bl fade-up d-1"
+            viewBox="0 0 50 50"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,2 L48,2 L48,50"
+              stroke="url(#goldGrad)"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12,12 L38,12 L38,38"
+              stroke="url(#goldGrad)"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M24,24 L24,24"
+              stroke="url(#goldGrad)"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+          </svg>
+
+          <!-- Peach SVGs for Back -->
+          <svg
+            class="svg-decor svg-peach-tl fade-up d-1"
+            style="width: 150px; opacity: 0.5"
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M-10,30 Q30,40 60,10"
+              stroke="url(#goldGrad)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle
+              cx="35"
+              cy="55"
+              r="15"
+              stroke="url(#goldGrad)"
+              stroke-width="1.5"
+            />
+            <path
+              d="M10,20 Q20,10 30,20 Q20,30 10,20"
+              stroke="url(#goldGrad)"
+              stroke-width="1"
+            />
+          </svg>
+          <svg
+            class="svg-decor svg-peach-br fade-up d-1"
+            style="width: 130px; opacity: 0.5"
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M-10,30 Q30,40 60,10"
+              stroke="url(#goldGrad)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle
+              cx="35"
+              cy="55"
+              r="15"
+              stroke="url(#goldGrad)"
+              stroke-width="1.5"
+            />
+            <path
+              d="M10,20 Q20,10 30,20 Q20,30 10,20"
+              stroke="url(#goldGrad)"
+              stroke-width="1"
+            />
+          </svg>
+
+          <!-- English Content -->
+          <div class="back-content">
+            <div class="eng-subtitle gold-text fade-up d-2">
+              Please join us to celebrate
+            </div>
+            <div class="eng-name shimmer fade-up d-3">Tjhin Lian Djit</div>
+            <div class="eng-title gold-text fade-up d-3">
+              88<sup>th</sup> BIRTHDAY
+            </div>
+
+            <div class="eng-details gold-text fade-up d-4">
+              SATURDAY, OCTOBER 10, 2026<br />
+              AT 5:00 IN THE EVENING
+            </div>
+
+            <div
+              class="eng-details gold-text fade-up d-4"
+              style="margin-bottom: 0"
+            >
+              OUR HOME<br />
+              Jalan Nipah IV No. 278<br />
+              Pasir Putih
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint" id="tap-hint">Tekan untuk membuka</div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const card = document.getElementById("invitation-card");
+        const hint = document.getElementById("tap-hint");
+        let hasFlipped = false;
+
+        // card.addEventListener("animationend", () => {
+        //   card.style.animation = "none";
+        // });
+
+        // Trigger entrance animations for front face after initial card load
+        setTimeout(() => {
+          card.classList.add("entrance-done");
+        }, 1800);
+
+        // Flip Logic
+        const toggleFlip = () => {
+          card.classList.toggle("is-flipped");
+
+          if (!hasFlipped) {
+            hasFlipped = true;
+            hint.style.transition = "opacity 0.6s ease";
+            hint.style.opacity = "0";
+          }
+        };
+
+        card.addEventListener("click", toggleFlip);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleFlip();
+          }
+        });
+
+        // Particle System Logic
+        const canvas = document.getElementById("particle-canvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        const prefersReducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        const resizeCanvas = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = Math.random() * 0.4 - 0.2;
+            this.speedY = Math.random() * -0.5 - 0.2;
+            this.opacity = Math.random() * 0.6 + 0.1;
+          }
+
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.y < -10) this.y = canvas.height + 10;
+            if (this.x < -10) this.x = canvas.width + 10;
+            if (this.x > canvas.width + 10) this.x = -10;
+          }
+
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "rgba(212, 175, 55, 0.6)";
+            ctx.fill();
+          }
+        }
+
+        const initParticles = () => {
+          particles = [];
+          const numParticles = window.innerWidth > 768 ? 60 : 35;
+          for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+          }
+        };
+
+        const animateParticles = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach((p) => {
+            p.update();
+            p.draw();
+          });
+          requestAnimationFrame(animateParticles);
+        };
+
+        if (!prefersReducedMotion) {
+          window.addEventListener("resize", () => {
+            resizeCanvas();
+            initParticles();
+          });
+          resizeCanvas();
+          initParticles();
+          animateParticles();
+        }
+      });
+    </script>
+  </body>
+</html>
