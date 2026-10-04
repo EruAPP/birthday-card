@@ -30,6 +30,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link rel="icon" href="images/shou.png" type="image/x-icon" />
 
     <!-- css -->
     <link rel="stylesheet" href="css/animate.min.css" />
@@ -39,6 +40,7 @@
     <link rel="preload" as="style" href="css/themesv2-DZZF_N8v.css" />
     <link rel="stylesheet" href="css/bootstrap-vCaDZZbr.css" />
     <link rel="stylesheet" href="css/themesv2-DZZF_N8v.css" />
+    <link rel="stylesheet" href="css/shou_animation.css" />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Ovo&display=swap");
       @import url("css/style.css");
@@ -124,7 +126,7 @@
       </div>
       <!-- music -->
       <audio id="music" loop="" autoplay="">
-        <source src="media/jamrud-selamat-ulang-tahun.mp3" />
+        <source src="media/song.mp3" />
       </audio>
       <!-- end music -->
       <div
@@ -226,7 +228,7 @@
                               </div>
                               <div
                                 class="color-accent editable animate__animated animate__fadeInRight animate__slower font-latin"
-                                style="font-size: 150px; margin-top: -15%"
+                                style="font-size: 150px; margin-top: -10%"
                               >
                                 Tjhin Lian Djit
                               </div>
@@ -315,50 +317,45 @@
                           class="px-3 h-100 d-flex flex-column justify-content-center align-items-center w-100"
                         >
                           <!-- Wadah Flexbox (Setengah Gambar, Setengah Teks) -->
+                          <!-- Animasi Shou / 寿 -->
+                          <!-- Animasi Shou / 寿 -->
                           <div
-                            class="mb-4 d-flex align-items-center justify-content-center w-100"
-                            style="max-width: 340px; gap: 15px"
+                            class="shou-animation"
+                            style="animation-delay: 300ms"
                           >
-                            <!-- Sisi Kiri: Gambar (Kira-kira 50%) -->
-                            <div
-                              class="animate__animated animate__zoomIn animate__slower"
-                              style="
-                                flex: 1;
-                                display: flex;
-                                justify-content: flex-end;
-                                animation-delay: 300ms;
-                              "
-                            >
-                              <img
-                                src="./images/foto.jpeg"
-                                alt="Foto Tjhin Lian Djit"
-                                style="
-                                  width: 100%;
-                                  max-width: 140px;
-                                  aspect-ratio: 3/4;
-                                  object-fit: cover;
-                                  border-radius: 12px;
-                                  border: 2px solid var(--inv-border);
-                                  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
-                                "
-                              />
-                            </div>
+                            <div class="shou-halo"></div>
 
-                            <!-- Sisi Kanan: Teks Nama (Kira-kira 50%) -->
+                            <img
+                              src="./images/shou.png"
+                              alt="寿"
+                              class="shou-character"
+                              draggable="false"
+                            />
+
+                            <div class="shou-shine"></div>
+
+                            <div class="shou-sparkles">
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                            </div>
+                          </div>
+
+                          <!-- Nama tetap -->
+                          <div
+                            class="animate__animated animate__fadeInUp animate__slower text-center"
+                            style="animation-delay: 1300ms; margin-top: -20px"
+                          >
                             <div
-                              class="animate__animated animate__fadeInRight animate__slower"
-                              style="
-                                flex: 1;
-                                text-align: left;
-                                animation-delay: 500ms;
-                              "
+                              class="editable color-accent"
+                              style="font-size: 36px; line-height: 1.1"
                             >
-                              <div
-                                class="editable color-accent"
-                                style="font-size: 36px; line-height: 1.1"
-                              >
-                                Tjhin<br />Lian Djit
-                              </div>
+                              Tjhin<br />Lian Djit
                             </div>
                           </div>
 
@@ -757,7 +754,7 @@
                               >
                                 Dengan penuh rasa syukur, terima kasih atas
                                 kehadiran dan doa yang turut mengiringi
-                                perjalanan 80 tahun yang penuh kenangan ini.
+                                perjalanan 88 tahun yang penuh kenangan ini.
                                 Semoga kebersamaan dan kebahagiaan senantiasa
                                 menyertai kita semua.
                               </div>
